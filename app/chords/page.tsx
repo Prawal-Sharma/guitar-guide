@@ -1,16 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChordDiagram } from "@/components/chords/ChordDiagram";
 import { fullChordsDatabase, getChordsByDifficulty, getChordsByCategory } from "@/lib/chords-data";
 import { guitarAudio } from "@/lib/audio/guitar-audio";
-import { Search } from "lucide-react";
+import { Search, Heart, Volume2, Info } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function ChordsPage() {
   const [selectedChord, setSelectedChord] = useState<string>("C");
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
   const [searchQuery, setSearchQuery] = useState("");
+  const [favoriteChords, setFavoriteChords] = useState<Set<string>>(new Set());
+  const [hoveredChord, setHoveredChord] = useState<string | null>(null);
+  const [showFavorites, setShowFavorites] = useState(false);
+  
+  useEffect(() => {
+    const stored = localStorage.getItem("favoriteChords");
+    if (stored) {
+      setFavoriteChords(new Set(JSON.parse(stored)));
+    }
+  }, []);
   
   const beginnerChords = getChordsByDifficulty('beginner');
   const intermediateChords = getChordsByDifficulty('intermediate');
@@ -30,36 +41,74 @@ export default function ChordsPage() {
   const eleventhChords = getChordsByCategory('11th');
   const thirteenthChords = getChordsByCategory('13th');
 
-  const handlePlayChord = async () => {
+  const handlePlayChord = async (chordName?: string) => {
     if (isPlaying) return;
-    const chord = fullChordsDatabase[selectedChord];
+    const chord = fullChordsDatabase[chordName || selectedChord];
     if (!chord) return;
     
     setIsPlaying(true);
     await guitarAudio.playChord(chord);
     setTimeout(() => setIsPlaying(false), 1000);
   };
+  
+  const toggleFavorite = (chordName: string) => {
+    const newFavorites = new Set(favoriteChords);
+    if (newFavorites.has(chordName)) {
+      newFavorites.delete(chordName);
+    } else {
+      newFavorites.add(chordName);
+    }
+    setFavoriteChords(newFavorites);
+    localStorage.setItem("favoriteChords", JSON.stringify(Array.from(newFavorites)));
+  };
+  
+  const handleChordHover = async (chordName: string) => {
+    setHoveredChord(chordName);
+    // Optional: Auto-play on hover (can be enabled in settings)
+    const autoPlayOnHover = localStorage.getItem("autoPlayChordOnHover") === "true";
+    if (autoPlayOnHover && !isPlaying) {
+      await handlePlayChord(chordName);
+    }
+  };
 
   const filteredChords = (chords: string[]) => {
-    if (!searchQuery) return chords;
-    return chords.filter(chord => 
-      chord.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    let filtered = chords;
+    
+    if (showFavorites) {
+      filtered = filtered.filter(chord => favoriteChords.has(chord));
+    }
+    
+    if (searchQuery) {
+      filtered = filtered.filter(chord => 
+        chord.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    return filtered;
   };
 
   const ChordButton = ({ name }: { name: string }) => (
-    <button
+    <motion.button
       onClick={() => setSelectedChord(name)}
+      onMouseEnter={() => handleChordHover(name)}
+      onMouseLeave={() => setHoveredChord(null)}
       aria-pressed={selectedChord === name}
       aria-label={`Select ${name} chord`}
-      className={`p-2 rounded text-xs font-medium transition-colors ${
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className={`relative p-2 rounded text-xs font-medium transition-all ${
         selectedChord === name
-          ? "bg-blue-600 text-white"
+          ? "bg-blue-600 text-white ring-2 ring-blue-400"
+          : hoveredChord === name
+          ? "bg-gray-600 text-white"
           : "bg-gray-700 text-gray-300 hover:bg-gray-600"
       }`}
     >
       {name}
-    </button>
+      {favoriteChords.has(name) && (
+        <Heart className="absolute -top-1 -right-1 w-3 h-3 text-red-500 fill-current" />
+      )}
+    </motion.button>
   );
 
   const currentChord = fullChordsDatabase[selectedChord];
@@ -91,6 +140,26 @@ export default function ChordsPage() {
                     className="w-full pl-10 pr-4 py-2 bg-gray-900 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
+              </div>
+              
+              {/* Favorites Toggle */}
+              <div className="mb-4">
+                <button
+                  onClick={() => setShowFavorites(!showFavorites)}
+                  className={`w-full px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors ${
+                    showFavorites
+                      ? "bg-red-600 text-white"
+                      : "bg-gray-900 text-gray-400 hover:text-white"
+                  }`}
+                >
+                  <Heart className={`w-4 h-4 ${showFavorites ? "fill-current" : ""}`} />
+                  <span>{showFavorites ? "Showing Favorites" : "Show Favorites"}</span>
+                  {favoriteChords.size > 0 && (
+                    <span className="text-xs bg-black/30 px-2 py-0.5 rounded-full">
+                      {favoriteChords.size}
+                    </span>
+                  )}
+                </button>
               </div>
               
               {/* Difficulty Filter */}
@@ -240,10 +309,23 @@ export default function ChordsPage() {
           </div>
           
           <div className="lg:col-span-2">
-            <div className="bg-gray-800 rounded-lg p-8">
+            <motion.div 
+              className="bg-gray-800 rounded-lg p-8"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              key={selectedChord}
+              transition={{ duration: 0.3 }}
+            >
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-white">{currentChord?.name || selectedChord}</h2>
+                  <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                    {currentChord?.name || selectedChord}
+                    {hoveredChord && hoveredChord !== selectedChord && (
+                      <span className="text-sm text-gray-400 font-normal">
+                        (hovering: {hoveredChord})
+                      </span>
+                    )}
+                  </h2>
                   {currentChord && (
                     <div className="flex gap-2 mt-2">
                       {currentChord.difficulty && (
@@ -279,18 +361,31 @@ export default function ChordsPage() {
                 )}
               </div>
               
-              <div className="text-center mb-6">
+              <div className="flex justify-center gap-3 mb-6">
                 <button 
-                  onClick={handlePlayChord}
+                  onClick={() => handlePlayChord()}
                   disabled={isPlaying}
                   aria-label={isPlaying ? "Playing chord" : `Play ${selectedChord} chord`}
-                  className={`px-8 py-3 rounded-lg transition-colors ${
+                  className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${
                     isPlaying 
                       ? "bg-gray-600 text-gray-400 cursor-not-allowed" 
-                      : "bg-blue-600 text-white hover:bg-blue-700"
+                      : "bg-blue-600 text-white hover:bg-blue-700 hover:scale-105"
                   }`}
                 >
-                  {isPlaying ? "🔊 Playing..." : "🔊 Play Chord"}
+                  <Volume2 className="w-5 h-5" />
+                  {isPlaying ? "Playing..." : "Play Chord"}
+                </button>
+                
+                <button
+                  onClick={() => toggleFavorite(selectedChord)}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${
+                    favoriteChords.has(selectedChord)
+                      ? "bg-red-600 text-white hover:bg-red-700"
+                      : "bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white"
+                  }`}
+                >
+                  <Heart className={`w-5 h-5 ${favoriteChords.has(selectedChord) ? "fill-current" : ""}`} />
+                  {favoriteChords.has(selectedChord) ? "Favorited" : "Add to Favorites"}
                 </button>
               </div>
               
@@ -306,7 +401,7 @@ export default function ChordsPage() {
                   )}
                 </ul>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
 

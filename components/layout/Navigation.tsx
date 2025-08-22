@@ -56,10 +56,12 @@ export function Navigation() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-                  "hover:bg-gray-800 hover:text-white",
+                  "relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                  "hover:bg-gray-800 hover:text-white hover:scale-105",
                   pathname === item.href
-                    ? "bg-gray-800 text-white"
+                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg"
+                    : pathname.startsWith(item.href) && item.href !== "/"
+                    ? "bg-gray-800 text-blue-400"
                     : "text-gray-300"
                 )}
               >
@@ -108,10 +110,12 @@ export function Navigation() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors",
-                  "hover:bg-gray-800 hover:text-white",
+                  "flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200",
+                  "hover:bg-gray-800 hover:text-white hover:translate-x-1",
                   pathname === item.href
-                    ? "bg-gray-800 text-white"
+                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg"
+                    : pathname.startsWith(item.href) && item.href !== "/"
+                    ? "bg-gray-800 text-blue-400"
                     : "text-gray-300"
                 )}
               >

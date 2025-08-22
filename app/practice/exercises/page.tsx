@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Play, RotateCcw, CheckCircle, Clock, Target } from "lucide-react";
+import { Play, Pause, RotateCcw, CheckCircle, Clock, Target } from "lucide-react";
 import { TabReader } from "@/components/tabs/TabReader";
+import { addPracticeSession } from "@/lib/progress-tracking";
 
 const exercises = {
   beginner: [
@@ -122,9 +123,61 @@ export default function ExercisesPage() {
   const [selectedLevel, setSelectedLevel] = useState<"beginner" | "intermediate" | "advanced">("beginner");
   const [selectedExercise, setSelectedExercise] = useState<any>(null);
   const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set());
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const startTimeRef = useRef<number | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (isTimerRunning) {
+      startTimeRef.current = Date.now() - elapsedTime * 1000;
+      intervalRef.current = setInterval(() => {
+        if (startTimeRef.current) {
+          setElapsedTime(Math.floor((Date.now() - startTimeRef.current) / 1000));
+        }
+      }, 100);
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    }
+    
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isTimerRunning]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const toggleTimer = () => {
+    setIsTimerRunning(!isTimerRunning);
+  };
+
+  const resetTimer = () => {
+    setIsTimerRunning(false);
+    setElapsedTime(0);
+    startTimeRef.current = null;
+  };
 
   const handleCompleteExercise = (exerciseId: string) => {
     setCompletedExercises(new Set([...completedExercises, exerciseId]));
+    
+    // Save practice session if timer was running
+    if (elapsedTime > 0) {
+      const minutes = Math.floor(elapsedTime / 60);
+      if (minutes > 0) {
+        addPracticeSession(minutes, [exerciseId]);
+      }
+    }
+    
+    // Reset timer after completing
+    resetTimer();
   };
 
   return (
@@ -140,6 +193,50 @@ export default function ExercisesPage() {
             <p className="text-gray-300 text-lg">
               Structured exercises to improve your technique and skills
             </p>
+          </div>
+
+          {/* Practice Timer */}
+          <div className="flex justify-center mb-8">
+            <div className="bg-gray-800 rounded-lg px-6 py-4 flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-blue-500" />
+                <span className="text-2xl font-mono text-white">
+                  {formatTime(elapsedTime)}
+                </span>
+              </div>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={toggleTimer}
+                  className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+                    isTimerRunning
+                      ? "bg-red-600 text-white hover:bg-red-700"
+                      : "bg-green-600 text-white hover:bg-green-700"
+                  }`}
+                >
+                  {isTimerRunning ? (
+                    <>
+                      <Pause className="w-4 h-4" />
+                      Pause
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4" />
+                      {elapsedTime > 0 ? "Resume" : "Start"}
+                    </>
+                  )}
+                </button>
+                
+                {elapsedTime > 0 && (
+                  <button
+                    onClick={resetTimer}
+                    className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Level Selector */}
