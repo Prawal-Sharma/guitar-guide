@@ -47,7 +47,7 @@ export default function Home() {
               href="/chords"
               className="px-8 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all hover:scale-105"
             >
-              View Lessons
+              Explore Chords
             </Link>
           </motion.div>
         </motion.div>
