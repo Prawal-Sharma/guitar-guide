@@ -1,0 +1,48 @@
+export function Footer() {
+  return (
+    <footer className="bg-gray-900 border-t border-gray-800 mt-auto">
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid md:grid-cols-4 gap-8">
+          <div>
+            <h3 className="text-white font-semibold mb-3">Learn</h3>
+            <ul className="space-y-2 text-gray-400 text-sm">
+              <li><a href="/learn" className="hover:text-white transition-colors">Getting Started</a></li>
+              <li><a href="/chords" className="hover:text-white transition-colors">Chord Library</a></li>
+              <li><a href="/tabs" className="hover:text-white transition-colors">Tab Reader</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="text-white font-semibold mb-3">Practice</h3>
+            <ul className="space-y-2 text-gray-400 text-sm">
+              <li><a href="/practice/metronome" className="hover:text-white transition-colors">Metronome</a></li>
+              <li><a href="/practice/tuner" className="hover:text-white transition-colors">Guitar Tuner</a></li>
+              <li><a href="/practice/exercises" className="hover:text-white transition-colors">Exercises</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="text-white font-semibold mb-3">Resources</h3>
+            <ul className="space-y-2 text-gray-400 text-sm">
+              <li><a href="/theory" className="hover:text-white transition-colors">Music Theory</a></li>
+              <li><a href="/songs" className="hover:text-white transition-colors">Song Library</a></li>
+              <li><a href="/tips" className="hover:text-white transition-colors">Tips & Tricks</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="text-white font-semibold mb-3">About</h3>
+            <p className="text-gray-400 text-sm">
+              Guitar Guide is your comprehensive platform for learning guitar, 
+              from beginner basics to advanced techniques.
+            </p>
+          </div>
+        </div>
+        
+        <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
+          <p>&copy; 2024 Guitar Guide. Built with passion for music education.</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
