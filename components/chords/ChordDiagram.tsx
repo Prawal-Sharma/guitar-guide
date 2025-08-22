@@ -1,0 +1,230 @@
+"use client";
+
+import { useState } from "react";
+
+interface ChordPosition {
+  string: number;
+  fret: number;
+  finger?: number;
+}
+
+interface ChordData {
+  name: string;
+  positions: ChordPosition[];
+  barres?: { fret: number; strings: [number, number] }[];
+  openStrings: number[];
+  mutedStrings: number[];
+}
+
+interface ChordDiagramProps {
+  chord: ChordData;
+  size?: number;
+  showFingers?: boolean;
+}
+
+export function ChordDiagram({ 
+  chord, 
+  size = 200, 
+  showFingers = true 
+}: ChordDiagramProps) {
+  const [hoveredString, setHoveredString] = useState<number | null>(null);
+  
+  const strings = 6;
+  const frets = 5;
+  const startFret = Math.min(...chord.positions.map(p => p.fret).filter(f => f > 0)) || 1;
+  
+  const width = size;
+  const height = size * 1.2;
+  const padding = 20;
+  const fretWidth = (width - 2 * padding) / frets;
+  const stringHeight = (height - 2 * padding) / (strings - 1);
+  
+  return (
+    <div className="inline-block">
+      <h3 className="text-xl font-bold text-white mb-2 text-center">{chord.name}</h3>
+      <svg
+        width={width}
+        height={height}
+        className="bg-gray-900 rounded"
+        onMouseLeave={() => setHoveredString(null)}
+      >
+        {/* Fretboard */}
+        <rect
+          x={padding}
+          y={padding}
+          width={width - 2 * padding}
+          height={height - 2 * padding}
+          fill="none"
+          stroke="#4B5563"
+          strokeWidth="2"
+        />
+        
+        {/* Frets */}
+        {[...Array(frets)].map((_, i) => (
+          <line
+            key={`fret-${i}`}
+            x1={padding + (i + 1) * fretWidth}
+            y1={padding}
+            x2={padding + (i + 1) * fretWidth}
+            y2={height - padding}
+            stroke="#4B5563"
+            strokeWidth="1"
+          />
+        ))}
+        
+        {/* Strings */}
+        {[...Array(strings)].map((_, i) => (
+          <line
+            key={`string-${i}`}
+            x1={padding}
+            y1={padding + i * stringHeight}
+            x2={width - padding}
+            y2={padding + i * stringHeight}
+            stroke={hoveredString === i ? "#60A5FA" : "#9CA3AF"}
+            strokeWidth={hoveredString === i ? "3" : "2"}
+            onMouseEnter={() => setHoveredString(i)}
+            className="cursor-pointer transition-all"
+          />
+        ))}
+        
+        {/* Nut (if showing from first fret) */}
+        {startFret === 1 && (
+          <rect
+            x={padding - 4}
+            y={padding}
+            width={4}
+            height={height - 2 * padding}
+            fill="#D1D5DB"
+          />
+        )}
+        
+        {/* Fret number indicator */}
+        {startFret > 1 && (
+          <text
+            x={padding - 10}
+            y={padding + 20}
+            fill="#9CA3AF"
+            fontSize="12"
+            textAnchor="end"
+          >
+            {startFret}fr
+          </text>
+        )}
+        
+        {/* Finger positions */}
+        {chord.positions.map((pos, i) => {
+          const x = padding + (pos.fret - startFret + 0.5) * fretWidth;
+          const y = padding + (pos.string - 1) * stringHeight;
+          
+          return (
+            <g key={`pos-${i}`}>
+              <circle
+                cx={x}
+                cy={y}
+                r="8"
+                fill="#3B82F6"
+                stroke="#1D4ED8"
+                strokeWidth="2"
+                className="cursor-pointer hover:fill-blue-400 transition-colors"
+              />
+              {showFingers && pos.finger && (
+                <text
+                  x={x}
+                  y={y + 4}
+                  fill="white"
+                  fontSize="10"
+                  textAnchor="middle"
+                  pointerEvents="none"
+                >
+                  {pos.finger}
+                </text>
+              )}
+            </g>
+          );
+        })}
+        
+        {/* Barre chords */}
+        {chord.barres?.map((barre, i) => {
+          const x = padding + (barre.fret - startFret + 0.5) * fretWidth;
+          const y1 = padding + (barre.strings[0] - 1) * stringHeight;
+          const y2 = padding + (barre.strings[1] - 1) * stringHeight;
+          
+          return (
+            <rect
+              key={`barre-${i}`}
+              x={x - 8}
+              y={y1}
+              width="16"
+              height={y2 - y1}
+              rx="8"
+              fill="#3B82F6"
+              stroke="#1D4ED8"
+              strokeWidth="2"
+              opacity="0.9"
+            />
+          );
+        })}
+        
+        {/* Open and muted strings */}
+        {[...Array(strings)].map((_, i) => {
+          const stringNum = i + 1;
+          const x = padding - 10;
+          const y = padding + i * stringHeight;
+          
+          if (chord.openStrings.includes(stringNum)) {
+            return (
+              <circle
+                key={`open-${i}`}
+                cx={x}
+                cy={y}
+                r="4"
+                fill="none"
+                stroke="#10B981"
+                strokeWidth="2"
+              />
+            );
+          }
+          
+          if (chord.mutedStrings.includes(stringNum)) {
+            return (
+              <g key={`muted-${i}`}>
+                <line
+                  x1={x - 4}
+                  y1={y - 4}
+                  x2={x + 4}
+                  y2={y + 4}
+                  stroke="#EF4444"
+                  strokeWidth="2"
+                />
+                <line
+                  x1={x - 4}
+                  y1={y + 4}
+                  x2={x + 4}
+                  y2={y - 4}
+                  stroke="#EF4444"
+                  strokeWidth="2"
+                />
+              </g>
+            );
+          }
+          
+          return null;
+        })}
+      </svg>
+      
+      {/* String labels */}
+      <div className="flex justify-around mt-2 px-5">
+        {["E", "A", "D", "G", "B", "e"].map((note, i) => (
+          <span
+            key={note}
+            className={`text-xs ${
+              hoveredString === 5 - i ? "text-blue-400" : "text-gray-400"
+            }`}
+          >
+            {note}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
