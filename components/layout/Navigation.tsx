@@ -10,6 +10,7 @@ const navItems = [
   { href: "/chords", label: "Chords", icon: "🎸" },
   { href: "/tabs", label: "Tabs", icon: "📜" },
   { href: "/practice", label: "Practice", icon: "🎯" },
+  { href: "/theory", label: "Theory", icon: "🎓" },
   { href: "/progress", label: "Progress", icon: "📈" },
 ];
 

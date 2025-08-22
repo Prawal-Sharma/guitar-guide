@@ -25,8 +25,8 @@ export function Footer() {
             <h3 className="text-white font-semibold mb-3">Resources</h3>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li><a href="/theory" className="hover:text-white transition-colors">Music Theory</a></li>
-              <li><a href="/songs" className="hover:text-white transition-colors">Song Library</a></li>
-              <li><a href="/tips" className="hover:text-white transition-colors">Tips & Tricks</a></li>
+              <li><a href="/tabs" className="hover:text-white transition-colors">Song Library</a></li>
+              <li><a href="/progress" className="hover:text-white transition-colors">Track Progress</a></li>
             </ul>
           </div>
           
