@@ -6,6 +6,7 @@ import { fullChordsDatabase, getChordsByDifficulty, getChordsByCategory } from "
 import { guitarAudio } from "@/lib/audio/guitar-audio";
 import { Search, Heart, Volume2, Info } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function ChordsPage() {
   const [selectedChord, setSelectedChord] = useState<string>("C");
@@ -413,36 +414,36 @@ export default function ChordsPage() {
               <p className="text-gray-400 text-sm mb-3">
                 The most common progression in popular music
               </p>
-              <a href="/practice/progression" className="text-blue-400 hover:text-blue-300 text-sm">
+              <Link href="/practice/progression" className="text-blue-400 hover:text-blue-300 text-sm">
                 Practice →
-              </a>
+              </Link>
             </div>
             <div className="bg-gray-900 rounded p-4">
               <h3 className="text-lg font-semibold text-white mb-2">Am - F - C - G</h3>
               <p className="text-gray-400 text-sm mb-3">
                 Classic pop progression used in countless hits
               </p>
-              <a href="/practice/progression" className="text-blue-400 hover:text-blue-300 text-sm">
+              <Link href="/practice/progression" className="text-blue-400 hover:text-blue-300 text-sm">
                 Practice →
-              </a>
+              </Link>
             </div>
             <div className="bg-gray-900 rounded p-4">
               <h3 className="text-lg font-semibold text-white mb-2">Em - G - D - C</h3>
               <p className="text-gray-400 text-sm mb-3">
                 Emotional progression perfect for ballads
               </p>
-              <a href="/practice/progression" className="text-blue-400 hover:text-blue-300 text-sm">
+              <Link href="/practice/progression" className="text-blue-400 hover:text-blue-300 text-sm">
                 Practice →
-              </a>
+              </Link>
             </div>
             <div className="bg-gray-900 rounded p-4">
               <h3 className="text-lg font-semibold text-white mb-2">D - A - Bm - G</h3>
               <p className="text-gray-400 text-sm mb-3">
                 Uplifting progression great for practice
               </p>
-              <a href="/practice/progression" className="text-blue-400 hover:text-blue-300 text-sm">
+              <Link href="/practice/progression" className="text-blue-400 hover:text-blue-300 text-sm">
                 Practice →
-              </a>
+              </Link>
             </div>
           </div>
         </div>

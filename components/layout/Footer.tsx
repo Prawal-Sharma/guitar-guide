@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export function Footer() {
   return (
     <footer className="bg-gray-900 border-t border-gray-800 mt-auto">
@@ -6,27 +8,27 @@ export function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-3">Learn</h3>
             <ul className="space-y-2 text-gray-400 text-sm">
-              <li><a href="/learn" className="hover:text-white transition-colors">Getting Started</a></li>
-              <li><a href="/chords" className="hover:text-white transition-colors">Chord Library</a></li>
-              <li><a href="/tabs" className="hover:text-white transition-colors">Tab Reader</a></li>
+              <li><Link href="/learn" className="hover:text-white transition-colors">Getting Started</Link></li>
+              <li><Link href="/chords" className="hover:text-white transition-colors">Chord Library</Link></li>
+              <li><Link href="/tabs" className="hover:text-white transition-colors">Tab Reader</Link></li>
             </ul>
           </div>
           
           <div>
             <h3 className="text-white font-semibold mb-3">Practice</h3>
             <ul className="space-y-2 text-gray-400 text-sm">
-              <li><a href="/practice/metronome" className="hover:text-white transition-colors">Metronome</a></li>
-              <li><a href="/practice/tuner" className="hover:text-white transition-colors">Guitar Tuner</a></li>
-              <li><a href="/practice/exercises" className="hover:text-white transition-colors">Exercises</a></li>
+              <li><Link href="/practice/metronome" className="hover:text-white transition-colors">Metronome</Link></li>
+              <li><Link href="/practice/tuner" className="hover:text-white transition-colors">Guitar Tuner</Link></li>
+              <li><Link href="/practice/exercises" className="hover:text-white transition-colors">Exercises</Link></li>
             </ul>
           </div>
           
           <div>
             <h3 className="text-white font-semibold mb-3">Resources</h3>
             <ul className="space-y-2 text-gray-400 text-sm">
-              <li><a href="/theory" className="hover:text-white transition-colors">Music Theory</a></li>
-              <li><a href="/tabs" className="hover:text-white transition-colors">Song Library</a></li>
-              <li><a href="/progress" className="hover:text-white transition-colors">Track Progress</a></li>
+              <li><Link href="/theory" className="hover:text-white transition-colors">Music Theory</Link></li>
+              <li><Link href="/tabs" className="hover:text-white transition-colors">Song Library</Link></li>
+              <li><Link href="/progress" className="hover:text-white transition-colors">Track Progress</Link></li>
             </ul>
           </div>
           
