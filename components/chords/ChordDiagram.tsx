@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { guitarAudio } from "@/lib/audio/guitar-audio";
 
 interface ChordPosition {
   string: number;
@@ -20,14 +21,21 @@ interface ChordDiagramProps {
   chord: ChordData;
   size?: number;
   showFingers?: boolean;
+  onPlay?: () => void;
 }
 
 export function ChordDiagram({ 
   chord, 
   size = 200, 
-  showFingers = true 
+  showFingers = true,
+  onPlay
 }: ChordDiagramProps) {
   const [hoveredString, setHoveredString] = useState<number | null>(null);
+  
+  const handlePlayChord = async () => {
+    await guitarAudio.playChord(chord);
+    onPlay?.();
+  };
   
   const strings = 6;
   const frets = 5;
@@ -42,7 +50,8 @@ export function ChordDiagram({
   return (
     <div className="inline-block">
       <h3 className="text-xl font-bold text-white mb-2 text-center">{chord.name}</h3>
-      <svg
+      <div className="relative">
+        <svg
         width={width}
         height={height}
         className="bg-gray-900 rounded"
@@ -210,7 +219,19 @@ export function ChordDiagram({
           
           return null;
         })}
-      </svg>
+        </svg>
+        
+        {/* Play button overlay */}
+        <button
+          onClick={handlePlayChord}
+          className="absolute top-2 right-2 p-2 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors"
+          aria-label="Play chord"
+        >
+          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
+          </svg>
+        </button>
+      </div>
       
       {/* String labels */}
       <div className="flex justify-around mt-2 px-5">
