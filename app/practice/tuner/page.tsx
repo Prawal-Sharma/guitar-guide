@@ -7,7 +7,7 @@ export default function TunerPage() {
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-white mb-4">Guitar Tuner</h1>
           <p className="text-gray-300 text-lg">
-            Tune your guitar accurately using your device's microphone
+            Tune your guitar accurately using your device&apos;s microphone
           </p>
         </div>
 
@@ -76,7 +76,7 @@ export default function TunerPage() {
             </li>
             <li className="flex items-start">
               <span className="text-blue-400 font-bold mr-3">2.</span>
-              <span>Click "Start Tuning" to activate the microphone</span>
+              <span>Click &quot;Start Tuning&quot; to activate the microphone</span>
             </li>
             <li className="flex items-start">
               <span className="text-blue-400 font-bold mr-3">3.</span>

@@ -75,7 +75,7 @@ export default function PracticePage() {
         </div>
 
         <div className="bg-gray-800 rounded-lg p-8">
-          <h2 className="text-2xl font-bold text-white mb-6">Today's Practice</h2>
+          <h2 className="text-2xl font-bold text-white mb-6">Today&apos;s Practice</h2>
           
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div className="bg-gray-900 rounded p-6">

@@ -52,7 +52,8 @@ export function TabReader({ tab, title = "Tab Reader", tempo = 120 }: TabReaderP
     setIsPlaying(true);
     const adjustedTempo = tempo * playbackSpeed;
     
-    stopFunctionRef.current = await guitarAudio.playSequence(notes, adjustedTempo);
+    const stopFunction = await guitarAudio.playSequence(notes, adjustedTempo);
+    stopFunctionRef.current = stopFunction || null;
   };
 
   const handleStop = () => {
